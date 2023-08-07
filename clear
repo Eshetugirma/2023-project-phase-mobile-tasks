@@ -1,0 +1,24 @@
+[33mcommit 0bad788bb0a00cc3885f931d618793b7627618fc[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Merge: 13ca697 fcc7ec9
+Author: Eshetu Girma <eshetugirma321@gmail.com>
+Date:   Thu Aug 3 15:58:03 2023 +0300
+
+    Merge branch 'main' of https://github.com/Eshetugirma/A2SV_mob_dev_practice
+
+[33mcommit 13ca697f55b17e7906061e8c3b49334b096793ad[m
+Author: Eshetu Girma <eshetugirma321@gmail.com>
+Date:   Thu Aug 3 15:57:02 2023 +0300
+
+     circular counter added
+
+[33mcommit fcc7ec919da95b0f5dd1ca53624acbc6f40ba1b8[m
+Author: Eshetugirma <115847211+Eshetugirma@users.noreply.github.com>
+Date:   Wed Aug 2 16:37:43 2023 +0300
+
+    Create README.md
+
+[33mcommit 7f29e2f412b39b9fd04e4f2a2c1f96e06b6373b4[m
+Author: Eshetu Girma <eshetugirma321@gmail.com>
+Date:   Wed Aug 2 10:46:36 2023 +0300
+
+    task manager using dart

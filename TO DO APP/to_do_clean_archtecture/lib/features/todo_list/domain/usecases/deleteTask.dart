@@ -1,20 +1,35 @@
-import 'package:dartz/dartz.dart';
-import 'package:to_do_clean_archtecture/core/errors/failures.dart';
-// import 'package:to_do_clean_archtecture/features/todo_list/domain/entities/tasks.dart';
-import 'package:to_do_clean_archtecture/core/usecase/usecase.dart';
-import 'package:to_do_clean_archtecture/features/todo_list/domain/repository/todo_list_repository.dart';
+import 'package:dartz/dartz.dart' hide Task;
+import 'package:equatable/equatable.dart';
 
-class DeleteTask implements UseCase<void, int> {
-  final TaskRepository repository;
+import '../../../../core/errors/failures.dart';
+import '../../../../core/usecase/usecase.dart';
+import '../../domain/repository/todo_list_repository.dart';
+import '../entities/tasks.dart';
 
-  DeleteTask(this.repository);
+/// Use case for deleting a [Task]
+///
+/// Uses [TaskRepository] to delete a [Task]
+
+class DeleteTask extends UseCase<Task, DeleteParams> {
+  final TaskRepository _taskRepository;
+
+  DeleteTask(this._taskRepository);
 
   @override
-  Future<Either<Failure, void>> call(int id) async {
-    final result = await repository.deleteTask(id);
-    return result.fold(
-      (failure) => Left(failure),
-      (_) => Right(null),
-    );
+  Stream<Either<Failure, Task>> call(DeleteParams params) {
+    return _taskRepository.deleteTask(params.id);
   }
+}
+
+/// Params for deleting a [Task]
+///
+/// Expects the task [id] to be deleted
+
+class DeleteParams extends Equatable {
+  final String id;
+
+  const DeleteParams({required this.id});
+
+  @override
+  List<Object?> get props => [id];
 }

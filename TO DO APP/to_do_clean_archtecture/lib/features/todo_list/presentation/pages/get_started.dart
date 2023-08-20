@@ -1,40 +1,40 @@
 import 'package:flutter/material.dart';
 
-class GetStartedPage extends StatelessWidget {
+import '../widgets/custom_button.dart';
+import 'to_do_lists.dart';
+
+class OnboardingScreen extends StatelessWidget {
+  static const routeName = '/';
+
+  const OnboardingScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(238, 111, 87, 1),
-      body: Container(
-        margin: EdgeInsets.only(bottom: 70),
-        child: SafeArea(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Image.asset(
-                'assets/image1.png',
-                fit: BoxFit.fill,
-              ),
-              FloatingActionButton.extended(
-                onPressed: () {
-                  Navigator.of(context).pushNamed("/all");
-                },
-                label: Text(
-                  "Get Started",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 19,
-                  ),
-                ),
-                backgroundColor: Color.fromRGBO(12, 140, 233, 1),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(1),
-                ),
-              ),
-            ],
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      body: Stack(
+        children: [
+          // background image
+          Center(
+            child: Image.asset('assets/image1.png'),
           ),
-        ),
+
+          // get started button
+          Positioned(
+            bottom: 50,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: CustomButton(
+                label: 'Get started',
+                color: Theme.of(context).colorScheme.secondary,
+                onPressed: () {
+                  Navigator.pushNamed(context, TaskListScreen.routeName);
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

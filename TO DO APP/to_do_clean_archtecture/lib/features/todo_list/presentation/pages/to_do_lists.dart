@@ -1,74 +1,105 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_clean_archtecture/features/todo_list/presentation/widgets/to_do_card.dart';
-import 'package:to_do_clean_archtecture/features/todo_list/presentation/widgets/navigator.dart';
-import 'package:to_do_clean_archtecture/features/todo_list/presentation/pages/task_detail.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class TodoList extends StatelessWidget {
+import '../../../../injection_container.dart';
+import '../bloc/task_bloc.dart';
+import '../widgets/app_bar.dart';
+import '../widgets/custom_button.dart';
+import '../widgets/loading.dart';
+import '../widgets/snackbar.dart';
+import '../widgets/tasks_list_view.dart';
+import 'add_tasks.dart';
+
+class TaskListScreen extends StatefulWidget {
+  static const routeName = '/tasks';
+
+  const TaskListScreen({super.key});
+
+  @override
+  State<TaskListScreen> createState() => _TaskListScreenState();
+}
+
+class _TaskListScreenState extends State<TaskListScreen> {
+  @override
   Widget build(BuildContext context) {
-    List<Widget> lists = [];
-    for (int i = 0; i < 10; ++i) {
-      lists.add(TodoCard());
-    }
     return Scaffold(
-      body: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: "Todo List",
-        home: SafeArea(
-          child: Scaffold(
-            backgroundColor: Colors.white,
-            body: Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  NavWidget("Todo-list"),
-                  Center(child: Image.asset('assets/to_do_list.png')),
-                  Container(
-                    margin: EdgeInsets.only(left: 25, bottom: 8),
-                    child: Text(
-                      "Todo List",
-                      style: TextStyle(fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                  Container(
-                    height: 300,
-                    margin: EdgeInsets.only(bottom: 10),
-                    child: ListView(
-                      physics: AlwaysScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      padding: EdgeInsets.all(20),
-                      children: lists,
-                    ),
-                  ),
-                  Center(
-                    child: Container(
-                      margin: EdgeInsets.fromLTRB(20, 20, 20, 40),
-                      child: Center(
-                        child: FloatingActionButton.extended(
-                          onPressed: () {
-                            Navigator.of(context).pushNamed('/create');
-                          },
-                          label: Text(
-                            "Create task",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 19,
-                            ),
-                          ),
-                          backgroundColor: Color.fromRGBO(238, 111, 87, 1),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+      appBar: const CustomAppBar(title: 'Todo List'),
+      body: BlocProvider(
+        create: (context) =>
+            serviceLocator<TaskBloc>()..add(LoadAllTasksEvent()),
+        child: BlocBuilder<TaskBloc, TaskState>(
+          builder: (context, _) => buildBody(context),
+        ),
+      ),
+    );
+  }
+
+  Widget buildBody(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // top image
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height * .25,
+            child: Image.asset(
+              'assets/to_do_list.png',
             ),
           ),
-        ),
+          const SizedBox(height: 30),
+
+          // Title
+          Text(
+            'Tasks list',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 10),
+
+          // Tasks list
+          BlocConsumer<TaskBloc, TaskState>(
+            buildWhen: (previous, current) => current is! ErrorState,
+
+            //
+            listener: (context, state) {
+              if (state is ErrorState) {
+                showError(context, state.message);
+              }
+            },
+
+            //
+            builder: (context, state) {
+              // task loading
+              if (state is LoadingState) {
+                return const LoadingWidget();
+              }
+
+              // tasks loaded
+              else if (state is LoadedAllTasksState) {
+                return TasksListView(tasks: state.tasks);
+              }
+
+              return const CircularProgressIndicator();
+            },
+          ),
+
+          const SizedBox(height: 30),
+
+          // Create task button
+          Center(
+            child: CustomButton(
+              label: 'Create task',
+              onPressed: () async {
+                await Navigator.pushNamed(context, CreateTaskScreen.routeName);
+
+                if (mounted) {
+                  context.read<TaskBloc>().add(LoadAllTasksEvent());
+                }
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
